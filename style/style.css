@@ -1,0 +1,14 @@
+body {
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+#marvin {
+    width: 200px;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+#marvin:active {
+    transform: scale(0.9);
+}
