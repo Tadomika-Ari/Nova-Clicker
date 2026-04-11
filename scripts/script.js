@@ -1,6 +1,10 @@
 window.onload = function () {
     let score = parseInt(localStorage.getItem("score")) || 0;
+    const scoreDisplay = document.getElementById("score");
     let passiveScore = parseInt(localStorage.getItem("passive")) || 0;
+    const passiveDisplay = document.getElementById("passive");
+    const SCORE_PER_CLICK = 1;
+    let scorePerClick = parseInt(localStorage.getItem("scoreperclick")) || SCORE_PER_CLICK;
 
     const TOMATO_FARM = 100;
     const TOMATO_FARM_ADD = 1;
@@ -17,12 +21,12 @@ window.onload = function () {
     const moonRockFarmCostDisplay = document.getElementById("moonrockfarmcostdisplay");
 
     const marvin = document.getElementById("marvin");
-    const scoreDisplay = document.getElementById("score");
     const toggle = document.getElementById("panelToggle");
     const panel = document.getElementById("sidePanel");
     let panelOpen = false;
 
     scoreDisplay.textContent = score;
+    passiveDisplay.textContent = passiveScore;
 
     tomatoFarmDisplay.textContent = nbTomatoFarm;
     tomatoFarmCostDisplay.textContent = tomatoFarmCost;
@@ -31,7 +35,7 @@ window.onload = function () {
     moonRockFarmCostDisplay.textContent = moonRockFarmCost;
 
     marvin.addEventListener("click", () => {
-        score += 100;
+        score += scorePerClick;
         scoreDisplay.textContent = score;
         localStorage.setItem("score", score);
     });
@@ -52,9 +56,12 @@ window.onload = function () {
     window.resetScore = function () {
         score = 0;
         passiveScore = 0;
+        scorePerClick = SCORE_PER_CLICK;
         localStorage.setItem("score", 0);
         localStorage.setItem("passive", 0);
+        localStorage.setItem("scoreperclick", 0);
         scoreDisplay.textContent = score;
+        passiveDisplay.textContent = passiveScore;
 
         nbTomatoFarm = 0;
         tomatoFarmCost = TOMATO_FARM;
@@ -79,6 +86,7 @@ window.onload = function () {
     window.addTomatoFarm = function () {
         if (0 <= score - tomatoFarmCost) {
             passiveScore++;
+            passiveDisplay.textContent = passiveScore;
             score -= tomatoFarmCost;
             nbTomatoFarm += TOMATO_FARM_ADD;
             tomatoFarmCost += TOMATO_FARM;
@@ -96,6 +104,7 @@ window.onload = function () {
             passiveScore += MOONROCK_FARM_ADD;
             score -= moonRockFarmCost;
             nbMoonRockFarm++;
+            passiveDisplay.textContent = passiveScore;
             moonRockFarmCost += MOONROCK_FARM;
             moonRockFarmDisplay.textContent = nbMoonRockFarm;
             moonRockFarmCostDisplay.textContent = moonRockFarmCost;
