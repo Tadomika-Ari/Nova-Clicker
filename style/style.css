@@ -24,6 +24,11 @@
     margin: 10px auto;
 }
 
+.solar {
+  display: block;
+  margin-bottom: 10px auto;
+}
+
 * {
   margin: 0;
   padding: 0;
