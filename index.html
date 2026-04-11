@@ -6,14 +6,15 @@
     <link rel="stylesheet" href="style/style.css">
 </head>
 <body>
+    <div class="stars"></div>
 
     <h1>Score : <span id="score">0</span></h1>
 
     <img id="marvin" src="ressource/marvin.png" alt="marvin">
 
-    <button onclick="resetScore()">Reset</button>
+    <button class="trigger" id="reset" onclick="resetScore()">Reset</button>
 
-    <button onclick="addPassive()">Augmente</button>
+    <button class="trigger" onclick="addPassive()">Augmente</button>
 
     <script src="scripts/script.js"></script>
 </body>
