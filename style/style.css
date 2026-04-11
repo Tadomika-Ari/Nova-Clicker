@@ -1,5 +1,3 @@
-
-
 #marvin {
     width: 200px;
     cursor: pointer;
@@ -95,4 +93,25 @@ body {
       27vw 88vh 1px white, 35vw 72vh 2px white, 43vw 85vh 1px white,
       51vw 92vh 2px white, 59vw 78vh 1px white;
    animation: twinkle 6s infinite linear reverse;
+}
+
+.side-panel {
+    position: fixed;
+    top: 0;
+    right: -260px;
+    width: 260px;
+    height: 100vh;
+    background: rgba(10, 10, 30, 0.95);
+    transition: right 0.3s;
+    z-index: 99;
+}
+.side-panel.open {
+    right: 0;
+}
+.panel-toggle {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    z-index: 100;
+    transition: right 0.3s;
 }
