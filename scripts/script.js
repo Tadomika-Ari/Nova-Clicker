@@ -10,7 +10,6 @@ window.onload = function () {
 
     marvin.addEventListener("click", () => {
         score++;
-        passiveScore += 1;
         scoreDisplay.textContent = score;
         localStorage.setItem("score", score);
     });
