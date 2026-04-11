@@ -7,14 +7,28 @@
 </head>
 <body>
     <div class="stars"></div>
-
     <h1>Score : <span id="score">0</span></h1>
-
     <img id="marvin" src="ressource/marvin.png" alt="marvin">
 
-    <button class="trigger" id="reset" onclick="resetScore()">Reset</button>
+    <button class="panel-toggle" id="panelToggle">❮</button>
 
-    <button class="trigger" onclick="addPassive()">Augmente</button>
+    <div class="side-panel" id="sidePanel">
+        <div class="panel-title">Reset</div>
+        <button class="trigger" id="reset" onclick="resetScore()">Reset</button>
+        <div class="panel-title">Upgrades</div>
+        <button class="upgrade-button" onclick="addPassive()">
+            <div class="info">
+                <span class="name">Tomato farm :</span>
+                <span class="cost">1000 points</span>
+            </div>
+        </button>
+        <button class="upgrade-button" onclick="addPassive()">
+            <div class="info">
+                <span class="name">Moon rock farm :</span>
+                <span class="cost">10k points</span>
+            </div>
+        </button>
+    </div>
 
     <script src="scripts/script.js"></script>
 </body>
