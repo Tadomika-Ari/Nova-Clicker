@@ -16,6 +16,24 @@ function focusOnPlanet(planet) {
   camera.following = planet;
 }
 
+const sunSprite = new Image();
+sunSprite.src = "ressource/sun_art.png"
+
+const planetSpriteData = [
+  ["Sun", "ressource/sun_art.png"],
+  ["Mercury", "ressource/mercure_art.png"],
+  ["Venus", "ressource/venus_art.png"],
+  ["Earth", "ressource/terre_art.png"],
+  ["Mars", "ressource/mars_art.png"]
+];
+
+const planetSprites = {};
+planetSpriteData.forEach(([name, src]) => {
+  const img = new Image();
+  img.src = src;
+  planetSprites[name] = img;
+});
+
 const camera = {
   x: 0, y: 0,
   targetX: 0, targetY: 0,
@@ -200,54 +218,24 @@ var addedmasses = document.getElementById("addedMasses")
   class Manifestation {
     constructor(ctx, trailLength, radius) {
       this.ctx = ctx;
-    
-      this.trailLength = trailLength;
-  
+      this.trailLength = trailLength; // conservé pour compat
       this.radius = radius;
-  
-      this.positions = [];
     }
-  
-    storePosition(x, y) {
-      this.positions.push({
-        x,
-        y
-      });
-  
-      if (this.positions.length > this.trailLength) this.positions.shift();
-    }
-  
+
     draw(x, y) {
-      this.storePosition(x, y);
-  
-      const positionsLen = this.positions.length;
-  
-      for (let i = 0; i < positionsLen; i++) {
-        let transparency;
-        let circleScaleFactor;
-  
-        const scaleFactor = i / positionsLen;
-  
-        if (i === positionsLen - 1) {
-          transparency = 1;
-          circleScaleFactor = 1;
-        } else {
-          transparency = scaleFactor / 2;      
-          circleScaleFactor = scaleFactor;
-        }
-  
-        this.ctx.beginPath();
-        this.ctx.arc(
-          this.positions[i].x,
-          this.positions[i].y,
-          circleScaleFactor * this.radius,
-          0,
-          2 * Math.PI
-        );
-        this.ctx.fillStyle = `rgb(0, 153, 193, ${transparency})`;
-  
-        this.ctx.fill();
+      const r = this.radius;
+
+      // Planète en image (si chargée)
+      if (sunSprite.complete && sunSprite.naturalWidth > 0) {
+        this.ctx.drawImage(sunSprite, x - r, y - r, r * 2, r * 2);
+        return;
       }
+
+      // Fallback cercle
+      this.ctx.beginPath();
+      this.ctx.arc(x, y, r, 0, 2 * Math.PI);
+      this.ctx.fillStyle = "rgb(0, 153, 193)";
+      this.ctx.fill();
     }
   }
   
@@ -379,11 +367,7 @@ const radius = 4;
     },
     false
   );
-  
-  /*
-   * The animate function that sets everything in motion.
-   * We run it 60 times a second with the help of requestAnimationFrame
-   */
+
   function collisionDynamics(radius, mass1, mass2){
   if(mass1.destroyed||mass2.destroyed){
   	return;
@@ -475,4 +459,3 @@ const radius = 4;
   }
 
   animate();
- 
