@@ -1,17 +1,41 @@
 window.onload = function () {
     let score = parseInt(localStorage.getItem("score")) || 0;
+    const scoreDisplay = document.getElementById("score");
     let passiveScore = parseInt(localStorage.getItem("passive")) || 0;
+    const passiveDisplay = document.getElementById("passive");
+    const SCORE_PER_CLICK = 1;
+    let scorePerClick = parseInt(localStorage.getItem("scoreperclick")) || SCORE_PER_CLICK;
+
+    const TOMATO_FARM = 100;
+    const TOMATO_FARM_ADD = 1;
+    let tomatoFarmCost = parseInt(localStorage.getItem("tomatofarmcost")) || TOMATO_FARM;
+    let nbTomatoFarm = parseInt(localStorage.getItem("nbtomatofarm")) || 0;
+    const tomatoFarmDisplay = document.getElementById("tomatofarmdisplay");
+    const tomatoFarmCostDisplay = document.getElementById("tomatofarmcostdisplay");
+
+    const MOONROCK_FARM = 1000;
+    const MOONROCK_FARM_ADD = 2;
+    let moonRockFarmCost = parseInt(localStorage.getItem("moonrockfarmcost")) || MOONROCK_FARM;
+    let nbMoonRockFarm = parseInt(localStorage.getItem("nbmoonrockfarm")) || 0;
+    const moonRockFarmDisplay = document.getElementById("moonrockfarmdisplay");
+    const moonRockFarmCostDisplay = document.getElementById("moonrockfarmcostdisplay");
 
     const marvin = document.getElementById("marvin");
-    const scoreDisplay = document.getElementById("score");
     const toggle = document.getElementById("panelToggle");
     const panel = document.getElementById("sidePanel");
     let panelOpen = false;
 
     scoreDisplay.textContent = score;
+    passiveDisplay.textContent = passiveScore;
+
+    tomatoFarmDisplay.textContent = nbTomatoFarm;
+    tomatoFarmCostDisplay.textContent = tomatoFarmCost;
+
+    moonRockFarmDisplay.textContent = nbMoonRockFarm;
+    moonRockFarmCostDisplay.textContent = moonRockFarmCost;
 
     marvin.addEventListener("click", () => {
-        score++;
+        score += scorePerClick;
         scoreDisplay.textContent = score;
         localStorage.setItem("score", score);
     });
@@ -32,13 +56,62 @@ window.onload = function () {
     window.resetScore = function () {
         score = 0;
         passiveScore = 0;
+        scorePerClick = SCORE_PER_CLICK;
         localStorage.setItem("score", 0);
         localStorage.setItem("passive", 0);
-        scoreDisplay.textContent = 0;
+        localStorage.setItem("scoreperclick", 0);
+        scoreDisplay.textContent = score;
+        passiveDisplay.textContent = passiveScore;
+
+        nbTomatoFarm = 0;
+        tomatoFarmCost = TOMATO_FARM;
+        localStorage.setItem("nbtomatofarm", 0);
+        localStorage.setItem("tomatofarmcost", 0);
+        tomatoFarmDisplay.textContent = nbTomatoFarm;
+        tomatoFarmCostDisplay.textContent = tomatoFarmCost;
+
+        nbMoonRockFarm = 0;
+        moonRockFarmCost = MOONROCK_FARM;
+        localStorage.setItem("nbmoonrockfarm", 0);
+        localStorage.setItem("moonrockfarmcost", 0);
+        moonRockFarmDisplay.textContent = nbMoonRockFarm;
+        moonRockFarmCostDisplay.textContent = moonRockFarmCost;
     };
 
     window.addPassive = function () {
         passiveScore++;
         localStorage.setItem("passive", passiveScore);
+    };
+
+    window.addTomatoFarm = function () {
+        if (0 <= score - tomatoFarmCost) {
+            passiveScore++;
+            passiveDisplay.textContent = passiveScore;
+            score -= tomatoFarmCost;
+            nbTomatoFarm += TOMATO_FARM_ADD;
+            tomatoFarmCost += TOMATO_FARM;
+            tomatoFarmDisplay.textContent = nbTomatoFarm;
+            tomatoFarmCostDisplay.textContent = tomatoFarmCost;
+            localStorage.setItem("passive", passiveScore);
+            localStorage.setItem("score", score);
+            localStorage.setItem("nbtomatofarm", nbTomatoFarm);
+            localStorage.setItem("tomatofarmcost", tomatoFarmCost);
+        }
+    };
+
+    window.addMoonRockFarm = function () {
+        if (0 <= score - moonRockFarmCost) {
+            passiveScore += MOONROCK_FARM_ADD;
+            score -= moonRockFarmCost;
+            nbMoonRockFarm++;
+            passiveDisplay.textContent = passiveScore;
+            moonRockFarmCost += MOONROCK_FARM;
+            moonRockFarmDisplay.textContent = nbMoonRockFarm;
+            moonRockFarmCostDisplay.textContent = moonRockFarmCost;
+            localStorage.setItem("passive", passiveScore);
+            localStorage.setItem("score", score);
+            localStorage.setItem("nbmoonrockfarm", nbMoonRockFarm);
+            localStorage.setItem("moonrockfarmcost", moonRockFarmCost);
+        }
     };
 };
