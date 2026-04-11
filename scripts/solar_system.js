@@ -3,7 +3,39 @@
 // Retrieved 2026-04-11, License - CC BY-SA 4.0
 
   const names = [ "Jupiter", "Saturn", "Uranus", "Neptune", "Ceres", "Nemesis","Dephanov","Podaohiri","Xeviea","Noluna","Hoibos","Yenope","Straditov","Zoenov","Sapus","Kepler","Pasteur","Boltzmann","Gezeacarro","Xagricury","Vulmone","Ochion","Liavis","Roitis","Galoria","Phucohiri","Your Anus"]
-  
+
+function focusOnPlanet(planet) {
+  // Centre la caméra sur la planète
+  camera.targetX = planet.x;
+  camera.targetY = planet.y;
+
+  // Zoom adapté à la taille de la planète
+  camera.targetZoom = 5;
+
+  // Suivi continu : met à jour la position à chaque frame
+  camera.following = planet;
+}
+
+const camera = {
+  x: 0, y: 0,
+  targetX: 0, targetY: 0,
+  zoom: 1, targetZoom: 1,
+  following: null
+};
+
+// À appeler dans votre boucle d'animation (requestAnimationFrame)
+function updateCamera() {
+  if (camera.following) {
+    camera.targetX = camera.following.x;
+    camera.targetY = camera.following.y;
+  }
+
+  // Interpolation douce (lerp) pour un mouvement fluide
+  camera.x += (camera.targetX - camera.x) * 0.1;
+  camera.y += (camera.targetY - camera.y) * 0.1;
+  camera.zoom += (camera.targetZoom - camera.zoom) * 0.05;
+}
+
 var addedmasses = document.getElementById("addedMasses")
   class nBodyProblem {
     constructor(params) {
@@ -155,6 +187,11 @@ var addedmasses = document.getElementById("addedMasses")
     masses: JSON.parse(JSON.stringify(masses)),   
     softeningConstant
   });
+
+  const planets = innerSolarSystem.masses;
+  if (planets.length > 0) {
+    focusOnPlanet(planets[3]);
+  }
   
   /*
    * Motion trails
@@ -365,90 +402,67 @@ const radius = 4;
   }
   }
   }
-  let framect=0;
   const animate = () => {
-  	framect++;
-    if(framect%5==0){
-    	animateR();
-    }
-    requestAnimationFrame(animate);
-  }
-  
-  const animateR = () => {
-    /*
-     * Advance our simulation by one step
-     */
-  
     innerSolarSystem
       .updatePositionVectors()
       .updateAccelerationVectors()
       .updateVelocityVectors();
-     
-    /*
-     * Clear the canvas in preparation for the next drawing cycle
-     */
-  
-    ctx.clearRect(0, 0, width, height);
-  
+
     const massesLen = innerSolarSystem.masses.length;
-  
-    /*
-     * Let us draw some masses!
-     */
-  
     for (let i = 0; i < massesLen; i++) {
       const massI = innerSolarSystem.masses[i];
-  
-  if(massI.destroyed){
-  continue;
+      if (massI.destroyed) {
+        continue;
+      }
+
+      for (let j = i + 1; j < massesLen; j++) {
+        const massJ = innerSolarSystem.masses[j];
+        if (massJ.destroyed) {
+          continue;
+        }
+        collisionDynamics(4, massI, massJ);
+      }
+    }
+
+    draw();
+    requestAnimationFrame(animate);
   }
-      /*
-       * The origin (x = 0, y = 0) of the canvas coordinate system is in the top left corner
-       * To prevent our simulation from being centered on the top left corner, include the x and y offsets
-       * So that it is centered smack in the middle of the canvas
-       */
-  
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.scale(camera.zoom, camera.zoom);
+    ctx.translate(-camera.x * scale, -camera.y * scale);
+
+    const massesLen = innerSolarSystem.masses.length;
+    ctx.font = "15px Arial";
+
+    for (let i = 0; i < massesLen; i++) {
+      const massI = innerSolarSystem.masses[i];
+
+      if (massI.destroyed) {
+        continue;
+      }
+
+      const drawX = massI.x * scale;
+      const drawY = massI.y * scale;
+
+      massI.manifestation.draw(drawX, drawY);
+
+      if (massI.name) {
+        ctx.fillText(massI.name, drawX + 12, drawY + 4);
+      }
+
       const x = width / 2 + massI.x * scale;
       const y = height / 2 + massI.y * scale;
-
-      /*
-       * Draw our motion trail
-       */
-  
-      massI.manifestation.draw(x, y);
-  
-      /*
-       * If the mass has a name, draw it onto the canvas next to the leading circle of the motion trail
-       */
-  
-      if (massI.name) {
-        ctx.font = "15px Arial";
-        ctx.fillText(massI.name, x + 12, y + 4);
-        ctx.fill();
-      }
-      
-      /*
-       * Stop masses from escaping the bounds of the viewport
-       * If either condition is met, the velocity of the mass will be reversed
-       * And the mass will bounce back into the inner solar system
-       */
-
       if (x < radius || x > width - radius) massI.vx = -massI.vx;
-  
       if (y < radius || y > height - radius) massI.vy = -massI.vy;
-      for(let j=0;j<massesLen;j++){
-      if(j!=i){
-       collisionDynamics(4, massI, innerSolarSystem.masses[j]);
-      }
-      
-      }
-     
     }
-  
-    /*
-     * Draw the line which indicates direction and velocity of a mass that is about to be added when the mouse is being dragged
-     */
-  
+
+    ctx.restore();
+
     if (dragging) {
       ctx.beginPath();
       ctx.moveTo(mousePressX, mousePressY);
@@ -456,8 +470,9 @@ const radius = 4;
       ctx.strokeStyle = "red";
       ctx.stroke();
     }
-    
-  };
+
+    updateCamera();
+  }
 
   animate();
  
